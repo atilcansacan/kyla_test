@@ -17,154 +17,212 @@ class DashboardPageState extends State<DashboardPage>
     with TickerProviderStateMixin {
   late double yPosition;
   double _value = 0.0;
-  double topCircleValue = 0.4;
-  Color backgroundColor = Colors.white;
-  late double height;
-  late double midScreen;
-  late double bottomLineForButton;
-  late double midPointOfDrag;
+  double _topCircleValue = 0.4;
+  late double _height;
+  late double _midScreen;
+  late double _bottomLineForButton;
+  late double _midPointOfDrag;
   late AnimationController _colorController;
-  late Animation colorAnimation;
-  late AnimationController bottomAnimationController;
-  late Animation<double> bottomAnimation;
-  late AnimationController controllerForButton;
-  late Animation<double> animationForButton;
-  late AnimationController widthController;
-  late Animation<double> widthAnimation;
-  int duration = 1000;
-  bool updateButton = false;
-  double bottomWidth = 0.4;
-  bool isHeightZero = false;
+  late Animation _colorAnimation;
+  late AnimationController _bottomAnimationController;
+  late Animation<double> _bottomAnimation;
+  late AnimationController _controllerForButton;
+  late Animation<double> _animationForButton;
+  late AnimationController _widthController;
+  late Animation<double> _widthAnimation;
+  final int _duration = 1000;
+  bool _updateButton = false;
+  double _bottomWidth = 0.4;
+  bool _isHeightZero = false;
+  Color _backgroundColor = Colors.white;
 
-  late AnimationController topCircleController;
+  bool _isTapped = false;
+
+  late AnimationController _topCircleController;
   late Animation<double> topCircleAnimation;
+
   @override
   void initState() {
     super.initState();
-    setColorController();
-    setBottomController();
-    setButtonController();
-    setTopCircleAnimation();
-    setWidthAnimation();
+    _setColorController();
+    _setBottomController();
+    _setButtonController();
+    _setTopCircleAnimation();
+    _setWidthAnimation();
   }
 
-  _onDragStarted() {
-    if (yPosition == midScreen) {
-      midPointOfDrag = height * 0.3;
+  _onDragStarted(DragStartDetails details) {
+    /* if (yPosition == _midScreen) {
+      _midPointOfDrag = _height * 0.3;
     }
-    if (yPosition == bottomLineForButton) {
-      midPointOfDrag = height * 0.7;
-      setBottomAnimationValues();
+    if (yPosition == _bottomLineForButton) {
+      _midPointOfDrag = _height * 0.7;
+      */ /* setBottomAnimationValues();
       _startAnimation();
-      animateBottomShape();
-    }
+      animateBottomShape(); */ /*
+    }*/
   }
 
   _onDragEnd(value) {
-    if (yPosition < midPointOfDrag) {
+    /*   if (yPosition < _midPointOfDrag) {
       setState(() {
-        yPosition = midScreen;
+        yPosition = _midScreen;
         _value = 1.0;
       });
     }
-    if (yPosition >= midPointOfDrag) {
+    if (yPosition >= _midPointOfDrag) {
       setState(() {
-        yPosition = bottomLineForButton;
+        yPosition = _bottomLineForButton;
         _value = 0.0;
       });
     }
-    if (yPosition == midScreen) {
+    if (yPosition == _midScreen) {
       setState(() {
-        bottomWidth = bottomWidth;
-        topCircleValue = topCircleValue;
+        _bottomWidth = _bottomWidth;
+        _topCircleValue = _topCircleValue;
       });
-    }
+    }*/
   }
 
-  _onDragUpdate(dragDetails) {
-    setState(() {
-      yPosition = (yPosition + dragDetails.delta.dy)
-          .clamp(midScreen, bottomLineForButton);
-
-      if (yPosition <= height * 0.8) {
-        _value = 1.0;
-      } else {
-        _value = (midScreen / yPosition);
-      }
+  _onDragUpdate(DragUpdateDetails dragDetails) {
+    /*setState(() {
+      yPosition = yPosition + dragDetails.delta.dy;
+      _bottomAnimationController.value = yPosition / _height;
+      print(yPosition);
     });
+
+     if (_isTapped == false) {
+      setState(() {
+
+        yPosition = dragDetails.localPosition.dy
+            .clamp(_midScreen, _bottomLineForButton);
+      });
+
+      print((dragDetails.localPosition.dy));
+    } else {
+      print('RUNNING::: $_isTapped ');
+      setState(() {
+        yPosition = (yPosition + dragDetails.delta.dy)
+            .clamp(_midScreen, _bottomLineForButton);
+      });
+    }
+    _updateOpacity();*/
   }
 
   _onTap() {
-    animateBottomShape();
+    print(_height * _bottomAnimation.value);
+    print(_bottomAnimation.value);
+    /* animateBottomShape();
 
-    if (yPosition == midScreen) {
+    if (yPosition == _midScreen) {
       resetControllers();
       setBottomAnimationValues();
       setState(() {
-        yPosition = bottomLineForButton;
+        yPosition = _bottomLineForButton;
         _value = 0.0;
       });
     } else {
       _colorController.forward();
       _startAnimation();
       setState(() {
-        yPosition = midScreen;
+        yPosition = _midScreen;
       });
+    }
+
+    setState(() {
+      _isTapped = !_isTapped;
+    });*/
+  }
+
+  _updateOpacity() {
+    if (yPosition <= _height * 0.8) {
+      _value = 1.0;
+    } else {
+      _value = (_midScreen / yPosition);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: <Widget>[
-          const CenteredText(),
-          const Positioned(
-              bottom: 30, right: 0, left: 0, child: BottomNavBar()),
-          AnimatedBuilder(
-            animation: _colorController,
-            builder: (context, child) {
-              return Container(
-                color: mainBackgroundColor.withOpacity(_value),
-                child:
-                    yPosition == midScreen ? const MenuWidget() : Container(),
-              );
-            },
-          ),
-          isHeightZero == true
-              ? Container()
-              : Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BottomAnimation(
-                    animation: bottomAnimation,
-                    controller: bottomAnimationController,
-                    height: isHeightZero == true
-                        ? height
-                        : (height * bottomAnimation.value)
-                            .clamp(height * 0.6, height * 0.95),
-                    topCircle: topCircleValue,
-                    width: bottomWidth,
+      body: SizedBox(
+        height: size.height,
+        width: size.width,
+        child: Stack(
+          children: <Widget>[
+            const CenteredText(),
+            const Positioned(
+                bottom: 30, right: 0, left: 0, child: BottomNavBar()),
+            AnimatedBuilder(
+              animation: _colorController,
+              builder: (context, child) {
+                return Container(
+                  color: mainBackgroundColor.withOpacity(_value),
+                  child: yPosition == _midScreen
+                      ? const MenuWidget()
+                      : Container(),
+                );
+              },
+            ),
+            _isHeightZero == true
+                ? Container()
+                : Align(
+                    alignment: Alignment.bottomCenter,
+                    child: BottomAnimation(
+                      animation: _bottomAnimation,
+                      controller: _bottomAnimationController,
+                      height:
+                          yPosition.clamp(_height * 0.65, _bottomLineForButton),
+                      topCircle: _topCircleValue,
+                      width: _widthController.value,
+                    ),
                   ),
-                ),
-          animatedButton(),
-        ],
+            AnimatedPositioned(
+              duration: Duration(milliseconds: 300),
+              top: yPosition.clamp(_midScreen, _bottomLineForButton),
+              left: (size.width / 2) - (buttonSize / 2),
+              child: Draggable(
+                  axis: Axis.vertical,
+                  feedback: Container(),
+                  feedbackOffset: Offset.zero,
+                  dragAnchorStrategy: childDragAnchorStrategy,
+                  onDragEnd: (dragUpdateDetails) {
+                    _setDragCancelBehaviour();
+                  },
+                  onDragUpdate: (dragUpdateDetails) {
+                    setState(() {
+                      _bottomAnimationController.value =
+                          (dragUpdateDetails.globalPosition.dy /
+                              _bottomLineForButton);
+                      yPosition = dragUpdateDetails.globalPosition.dy;
+
+                      _widthController.forward();
+                    });
+                    print('Controller :: ${_widthController.value}');
+                    print('HEIGHT :: ${yPosition}');
+                  },
+                  child: animatedButton()),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget animatedButton() {
     return AnimatedButton(
-      animation: animationForButton,
       yPosition: yPosition,
+      animation: _animationForButton,
       duration: 1500,
-      color: updateButton && yPosition == midScreen
+      color: mainBackgroundColor,
+      /*_updateButton && yPosition == _midScreen
           ? Colors.white
-          : yPosition <= height * 0.65 && yPosition != midScreen
+          : yPosition <= _height * 0.65 && yPosition != _midScreen
               ? Colors.transparent
-              : mainBackgroundColor,
-      onTap: _onTap,
-      icon: updateButton
+              : mainBackgroundColor,*/
+      icon: _updateButton
           ? Icon(
               Icons.close,
               color: mainBackgroundColor,
@@ -173,88 +231,86 @@ class DashboardPageState extends State<DashboardPage>
               Icons.add,
               color: Colors.white,
             ),
-      onDragStarted: _onDragStarted,
-      onDragEnd: _onDragEnd,
-      onDragUpdate: _onDragUpdate,
     );
   }
 
-  setBottomController() {
-    // Initialize the animation controller
-    bottomAnimationController = AnimationController(
+  void _setBottomController() {
+    _bottomAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
       reverseDuration: const Duration(milliseconds: 2000),
     )..addListener(() {
-        if (bottomAnimation.value <= 0.59 || yPosition <= 0.6) {
-          bottomAnimationController.reverse();
-          topCircleController.reverse();
-          widthController.reverse();
+        final double bottomAnimationValue = _bottomAnimation.value;
+        final bool isHeightBelowThreshold =
+            bottomAnimationValue <= 0.59 || yPosition <= 0.6;
+        if (isHeightBelowThreshold) {
+          _bottomAnimationController.reverse();
+          _topCircleController.reverse();
+          _widthController.reverse();
         }
 
-        if (bottomAnimationController.isCompleted) {
+        /* if (_bottomAnimationController.isCompleted) {
           setState(() {
-            bottomWidth = 0.5;
-            topCircleValue = 0.5;
-            isHeightZero = true;
+            _bottomWidth = 0.5;
+            _topCircleValue = 0.5;
+            _isHeightZero = true;
           });
-        }
+        }*/
       });
 
-    // Create the animation
-    bottomAnimation = TweenSequence<double>(
+    _bottomAnimation = TweenSequence<double>(
       <TweenSequenceItem<double>>[
         TweenSequenceItem<double>(
-          tween: Tween<double>(begin: 0.92, end: 0.75)
+          tween: Tween<double>(begin: 0.92, end: 0.6)
               .chain(CurveTween(curve: Curves.easeOut)),
           weight: 2,
         ),
         TweenSequenceItem<double>(
-          tween: Tween<double>(begin: 0.75, end: 0.92)
+          tween: Tween<double>(begin: 0.6, end: 0.92)
               .chain(CurveTween(curve: Curves.linear)),
           weight: 3,
         ),
       ],
-    ).animate(bottomAnimationController);
+    ).animate(_bottomAnimationController);
   }
 
-  setButtonController() {
+  _setButtonController() {
     // Initialize the animation controller
-    controllerForButton = AnimationController(
+    _controllerForButton = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
       reverseDuration: const Duration(milliseconds: 2000),
     )..addListener(() {
-        //  print(bottomAnimation.value);
+        //  print(_bottomAnimation.value);
       });
 
     // Create the animation
-    animationForButton =
-        Tween<double>(begin: 0, end: 1).animate(controllerForButton);
-    animationForButton.addListener(() {
-      animationForButton.value > 0.8
+    _animationForButton =
+        Tween<double>(begin: 0, end: 1).animate(_controllerForButton);
+    _animationForButton.addListener(() {
+      _animationForButton.value > 0.8
           ? setState(() {
-              updateButton = true;
+              _updateButton = true;
             })
           : setState(() {
-              updateButton = false;
+              _updateButton = false;
             });
     });
   }
 
-  setColorController() {
+  _setColorController() {
     _colorController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..addListener(() {
         setState(() {
-          _value = colorAnimation.value;
-          backgroundColor =
+          _value = _colorAnimation.value;
+          _backgroundColor =
               Color.lerp(Colors.white, mainBackgroundColor, _value)!;
         });
       });
 
-    colorAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+    _colorAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
       CurvedAnimation(
         parent: _colorController,
         curve: Curves.easeInOut,
@@ -262,102 +318,118 @@ class DashboardPageState extends State<DashboardPage>
     );
   }
 
-  setTopCircleAnimation() {
-    topCircleController = AnimationController(
+  _setTopCircleAnimation() {
+    _topCircleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..addListener(() {
         setState(() {
-          topCircleValue = topCircleAnimation.value;
+          _topCircleValue = topCircleAnimation.value;
         });
       });
 
     topCircleAnimation = Tween<double>(begin: 0.4, end: 0.48).animate(
       CurvedAnimation(
-        parent: topCircleController,
+        parent: _topCircleController,
         curve: Curves.easeInOut,
       ),
     );
   }
 
-  setWidthAnimation() {
-    widthController = AnimationController(
+  _setWidthAnimation() {
+    _widthController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..addListener(() {
         setState(() {
-          bottomWidth = widthAnimation.value;
+          _bottomWidth = _widthAnimation.value;
         });
       });
 
-    widthAnimation = Tween<double>(begin: 0.4, end: 0.45).animate(
+    _widthAnimation = Tween<double>(begin: 0.4, end: 0.45).animate(
       CurvedAnimation(
-        parent: widthController,
+        parent: _widthController,
         curve: Curves.easeInOut,
       ),
     );
   }
 
   void _startAnimation() {
-    bottomAnimationController.reset();
-    bottomAnimationController.forward();
+    _bottomAnimationController.reset();
+    _bottomAnimationController.forward();
+  }
+
+  void _setDragCancelBehaviour() {
+    if (yPosition < _midPointOfDrag) {
+      setState(() {
+        yPosition = _midScreen;
+        _value = 1.0;
+      });
+    }
+    if (yPosition >= _midPointOfDrag) {
+      setState(() {
+        yPosition = _bottomLineForButton;
+        _value = 0.0;
+      });
+    }
   }
 
   animateBottomShape() {
-    controllerForButton.forward();
-    topCircleController.forward();
-    widthController.forward();
+    _controllerForButton.forward();
+    _topCircleController.forward();
+    _widthController.forward();
   }
 
   reverseBottomShape() {
-    bottomAnimationController.reverse();
-    topCircleController.reverse();
-    widthController.reverse();
+    _bottomAnimationController.reverse();
+    _topCircleController.reverse();
+    _widthController.reverse();
   }
 
   resetControllers() {
     _colorController.reset();
-    bottomAnimationController.reset();
-    controllerForButton.reset();
-    topCircleController.reset();
-    widthController.reset();
+    _bottomAnimationController.reset();
+    _controllerForButton.reset();
+    _topCircleController.reset();
+    _widthController.reset();
   }
 
   noneBottomAnimationValues() {
     setState(() {
-      bottomWidth = 0.4;
-      topCircleValue = 0.5;
-      isHeightZero = true;
+      _bottomWidth = 0.4;
+      _topCircleValue = 0.5;
+      _isHeightZero = true;
     });
   }
 
   setBottomAnimationValues() {
     setState(() {
-      bottomWidth = 0.4;
-      topCircleValue = 0.4;
-      isHeightZero = false;
+      _bottomWidth = 0.4;
+      _topCircleValue = 0.4;
+      _isHeightZero = false;
     });
   }
 
   @override
   void didChangeDependencies() {
-    yPosition = MediaQuery.of(context).size.height * 0.92;
-    height = MediaQuery.of(context).size.height;
-    midScreen = menuItems.length <= 5 ? height / 2 : height * 0.2;
-    bottomLineForButton = height * 0.92;
-    midPointOfDrag = menuItems.length <= 5
-        ? midScreen + (bottomLineForButton - midScreen) / 2
-        : height * 0.7;
+    _height = MediaQuery.of(context).size.height;
+    yPosition = _height * _bottomAnimation.value;
+
+    _midScreen = menuItems.length <= 5 ? _height / 2 : _height * 0.2;
+    _bottomLineForButton = _height * 0.92;
+    _midPointOfDrag = menuItems.length <= 5
+        ? _midScreen + (_bottomLineForButton - _midScreen) / 2
+        : _height * 0.7;
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     _colorController.dispose();
-    bottomAnimationController.dispose();
-    controllerForButton.dispose();
-    topCircleController.dispose();
-    widthController.dispose();
+    _bottomAnimationController.dispose();
+    _controllerForButton.dispose();
+    _topCircleController.dispose();
+    _widthController.dispose();
     super.dispose();
   }
 }

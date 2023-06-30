@@ -46,7 +46,7 @@ class BottomAnimationState extends State<BottomAnimation>
         child: Container(
           height: size.height * widget.animation.value,
           width: size.width,
-          color: Colors.white,
+          color: Colors.blue,
         ),
       ),
     );
